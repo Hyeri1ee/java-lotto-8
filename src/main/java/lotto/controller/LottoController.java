@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import camp.nextstep.edu.missionutils.Randoms;
 
+//너무 더러운 거 같음......
 public class LottoController {
     private static final int LOTTO_PRICE = 1000;//상수 (로또 1개의 가격)
     private List<Lotto> lottos = new ArrayList<>();//처음 구매 로또 리스트
@@ -74,6 +75,7 @@ public class LottoController {
         return String.format("%.1f", Math.round(profitRate * 10) / 10.0);
     }
 
+    //랭크 순서 계산
     private Map<Rank, Integer> calculateRankCount() {
         Map<Rank, Integer> rankCount = new HashMap<>();
         

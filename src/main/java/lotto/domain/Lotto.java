@@ -54,7 +54,7 @@ public class Lotto {
         return sorted;
     }
 
-/
+
     public int countMatchingNumbers(Lotto other) {
         return (int) numbers.stream()
                 .filter(num -> other.numbers.contains(num))

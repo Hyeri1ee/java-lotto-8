@@ -1,4 +1,4 @@
-package lotto;
+package lotto.domain;
 
 import lotto.constants.Error;
 import java.util.*;
@@ -32,6 +32,10 @@ public class Lotto {
         if (distinctCount != numbers.size()){
             throw new IllegalArgumentException(Error.LOTTO_NUMBERS_DUPLICATE.getMessage());
         }
+    }
+
+    public List<Integer> getNumbers(){
+        return numbers;
     }
 
 

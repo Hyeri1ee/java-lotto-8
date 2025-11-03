@@ -1,9 +1,12 @@
 package lotto;
 
+import lotto.domain.Lotto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
 import java.util.List;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -26,10 +29,15 @@ class LottoTest {
     @Test
     void 로또_번호_숫자범위가_1이상_45이하이면_정상이다() {
         //given
-
+        Lotto lotto = new Lotto(List.of(1,4,5,2,45,44));
         //when
+        List<Integer> numberList = lotto.getNumbers();
+        boolean check = numberList.stream()
+                .allMatch(num ->  num >= 1 &&  num <= 45);
 
         //then
+        assertThat(check).isEqualTo(true);
+
     }
 
 

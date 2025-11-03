@@ -15,6 +15,7 @@ public class LottoController {
     private static final int LOTTO_PRICE = 1000;//상수 (로또 1개의 가격)
     private List<Lotto> lottos = new ArrayList<>();//처음 구매 로또 리스트
 
+    private int purchaseAmount;//구입 금액
     private Lotto winningLotto;//당첨 번호
     private int bonusNumber;//보너스 번호
 
@@ -23,7 +24,7 @@ public class LottoController {
         Input input = new Input();
         
         System.out.println(Command.COMMAND_BUY_PRICE.getMessage());
-        int purchaseAmount = input.readPurchaseAmount();//가격
+        purchaseAmount = input.readPurchaseAmount();//가격
         
         int lottoCount = calculateLottoCount(purchaseAmount);
         generateLottos(lottoCount);
@@ -39,12 +40,38 @@ public class LottoController {
         printStatistics();
     }
 
+//통계 출력
     private void printStatistics() {
         System.out.println(Command.COMMAND_STATISTICS.getMessage());
         System.out.println("---");
         
         Map<Rank, Integer> rankCount = calculateRankCount();
         printRankStatistics(rankCount);
+        printProfitRate(rankCount);
+    }
+
+    private void printProfitRate(Map<Rank, Integer> rankCount) {
+        long totalPrize = calculateTotalPrize(rankCount);
+        double profitRate = calculateProfitRate(totalPrize);
+        System.out.println(Command.COMMAND_RESULT.getMessage() + formatProfitRate(profitRate) + "%입니다.");
+    }
+
+    private long calculateTotalPrize(Map<Rank, Integer> rankCount) {
+        long totalPrize = 0;
+        for (Rank rank : Rank.values()) {
+            if (rank != Rank.NONE) {
+                totalPrize += (long) rank.getPrize() * rankCount.get(rank);
+            }
+        }
+        return totalPrize;
+    }
+
+    private double calculateProfitRate(long totalPrize) {
+        return (double) totalPrize / purchaseAmount * 100;
+    }
+
+    private String formatProfitRate(double profitRate) {
+        return String.format("%.1f", Math.round(profitRate * 10) / 10.0);
     }
 
     private Map<Rank, Integer> calculateRankCount() {
@@ -53,7 +80,6 @@ public class LottoController {
         for (Rank rank : Rank.values()) {
             rankCount.put(rank, 0);
         }
-        
         for (Lotto lotto : lottos) {
             int matchCount = lotto.countMatchingNumbers(winningLotto);
             boolean hasBonus = lotto.getNumbers().contains(bonusNumber);
@@ -71,12 +97,10 @@ public class LottoController {
         printRank(Rank.SECOND, rankCount);
         printRank(Rank.FIRST, rankCount);
     }
-
+//위 함수 내장 함수
     private void printRank(Rank rank, Map<Rank, Integer> rankCount) {
         if (rank != Rank.NONE) {
-            String message = rank.getDescription() + 
-                " (" + formatPrize(rank.getPrize()) + "원) - " + 
-                rankCount.get(rank) + "개";
+            String message = rank.getDescription() + " (" + formatPrize(rank.getPrize()) + "원) - " + rankCount.get(rank) + "개";
             System.out.println(message);
         }
     }

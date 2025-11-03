@@ -45,8 +45,12 @@ public class Lotto {
     }
 
     public List<Integer> getNumbers(){
-        return numbers;
+        return new ArrayList<>(numbers);
     }
 
-
+    public List<Integer> getSortedNumbers() {
+        List<Integer> sorted = new ArrayList<>(numbers);
+        Collections.sort(sorted);
+        return sorted;
+    }
 }

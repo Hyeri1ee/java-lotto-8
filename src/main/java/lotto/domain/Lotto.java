@@ -7,7 +7,7 @@ public class Lotto {
     private final List<Integer> numbers;
 
     public Lotto(List<Integer> numbers) {
-        this.numbers = numbers; //로또 번호에 중복된 숫자가 있으면 예외가 발생한다. 테스트코드에서 validate()을 먼저 호출하면 NullPointerException 오류
+        this.numbers = new ArrayList<>(numbers);//해당 부분 방어적 복사 알아보기
         validate();
     }
 
@@ -15,6 +15,7 @@ public class Lotto {
     private void validate(){
         validateNumbersSize();
         validateIfDuplicate();
+        validateNumbersRange();
     }
 
     //로또 개수는 6개
@@ -31,6 +32,15 @@ public class Lotto {
                 .count();
         if (distinctCount != numbers.size()){
             throw new IllegalArgumentException(Error.LOTTO_NUMBERS_DUPLICATE.getMessage());
+        }
+    }
+
+    //로또 값은 1~45
+    private void validateNumbersRange() {
+        boolean isOutOfRange = numbers.stream().anyMatch(num -> num < 1 || num > 45);
+
+        if (isOutOfRange) {
+            throw new IllegalArgumentException(Error.LOTTO_NUMBERS_RANGE.getMessage());
         }
     }
 

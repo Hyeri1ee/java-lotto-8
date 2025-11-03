@@ -2,14 +2,17 @@ package lotto.controller;
 
 import lotto.constants.Command;
 import lotto.constants.Error;
+import lotto.constants.Rank;
 import lotto.domain.Lotto;
 import lotto.view.Input;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import camp.nextstep.edu.missionutils.Randoms;
 
 public class LottoController {
-    private static final int LOTTO_PRICE = 1000;
+    private static final int LOTTO_PRICE = 1000;//상수 (로또 1개의 가격)
     private List<Lotto> lottos = new ArrayList<>();//처음 구매 로또 리스트
 
     private Lotto winningLotto;//당첨 번호
@@ -32,6 +35,54 @@ public class LottoController {
         System.out.println(Command.COMMAND_BONUS_NUMBERS.getMessage());
         bonusNumber = input.readBonusNumber();
         validateBonusNumber();
+        
+        printStatistics();
+    }
+
+    private void printStatistics() {
+        System.out.println(Command.COMMAND_STATISTICS.getMessage());
+        System.out.println("---");
+        
+        Map<Rank, Integer> rankCount = calculateRankCount();
+        printRankStatistics(rankCount);
+    }
+
+    private Map<Rank, Integer> calculateRankCount() {
+        Map<Rank, Integer> rankCount = new HashMap<>();
+        
+        for (Rank rank : Rank.values()) {
+            rankCount.put(rank, 0);
+        }
+        
+        for (Lotto lotto : lottos) {
+            int matchCount = lotto.countMatchingNumbers(winningLotto);
+            boolean hasBonus = lotto.getNumbers().contains(bonusNumber);
+            Rank rank = Rank.valueOf(matchCount, hasBonus);
+            rankCount.put(rank, rankCount.get(rank) + 1);
+        }
+        
+        return rankCount;
+    }
+
+    private void printRankStatistics(Map<Rank, Integer> rankCount) {
+        printRank(Rank.FIFTH, rankCount);
+        printRank(Rank.FOURTH, rankCount);
+        printRank(Rank.THIRD, rankCount);
+        printRank(Rank.SECOND, rankCount);
+        printRank(Rank.FIRST, rankCount);
+    }
+
+    private void printRank(Rank rank, Map<Rank, Integer> rankCount) {
+        if (rank != Rank.NONE) {
+            String message = rank.getDescription() + 
+                " (" + formatPrize(rank.getPrize()) + "원) - " + 
+                rankCount.get(rank) + "개";
+            System.out.println(message);
+        }
+    }
+
+    private String formatPrize(int prize) {
+        return String.format("%,d", prize);
     }
 
     private void validateBonusNumber() {
@@ -39,7 +90,7 @@ public class LottoController {
         validateBonusNumberDuplicate();
     }
 
-    //똑같이 범위 적용
+    //로또 번호와 똑같이 범위 적용
     private void validateBonusNumberRange() {
         if (bonusNumber < 1 || bonusNumber > 45) {
             throw new IllegalArgumentException(Error.LOTTO_NUMBERS_RANGE.getMessage());

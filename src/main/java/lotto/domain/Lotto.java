@@ -53,4 +53,11 @@ public class Lotto {
         Collections.sort(sorted);
         return sorted;
     }
+
+/
+    public int countMatchingNumbers(Lotto other) {
+        return (int) numbers.stream()
+                .filter(num -> other.numbers.contains(num))
+                .count();
+    }
 }
